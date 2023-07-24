@@ -18,12 +18,19 @@ public class ThirdPerson : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 Position = GameObject.Find("Player").transform.position;
-        Vector3 direction = new Vector3(horizontal, 0, vertical);   
+        Vector3 CameraFoward = Camera.main.transform.forward;//Getting Camera Angle
+        Vector3 CameraRight = Camera.main.transform.right;
+        CameraFoward.y = 0;//Prevents flying
+        CameraFoward = CameraFoward.normalized;//Normalize camera angle to unit vector(length of 1)
+        CameraRight.y = 0;//Same as above
+        CameraRight = CameraRight.normalized;
+        Vector3 PlayerFVelocity = CameraFoward * vertical;
+        Vector3 PlayerHVelocity = CameraRight * horizontal;
+        Vector3 TotalVelocity = PlayerFVelocity + PlayerHVelocity;
 
-        if (direction.magnitude >= 0.1f)
+        if (TotalVelocity.magnitude >= 0.1f)
         {
-         rb.velocity = direction*speed;
+         rb.velocity = new Vector3(TotalVelocity.x*speed, rb.velocity.y, TotalVelocity.z*speed);    
         }
 
     }
