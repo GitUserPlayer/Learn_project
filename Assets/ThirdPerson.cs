@@ -16,8 +16,8 @@ public class ThirdPerson : MonoBehaviour
     }
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
         Vector3 CameraFoward = Camera.main.transform.forward;//Getting Camera Angle
         Vector3 CameraRight = Camera.main.transform.right;
         CameraFoward.y = 0;//Prevents flying
