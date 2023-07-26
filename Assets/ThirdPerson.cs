@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting.Generated.PropertyProviders;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 public class ThirdPerson : MonoBehaviour
 {
     public CharacterController controller;
     public Rigidbody rb;
     public float speed = 6f;
+    public float RegenRate = 1.0f;
+    public AudioSource _Thud, _ThudHard, _Jump;
+    public GameObject Dropdown_Effect, Dropdamage_Effect;
+    public int Health, MaxHealth, JumpForce;
     public bool IsGrounded = false;
-    public AudioSource _Thud;
-    public AudioSource _Jump;
-    public int JumpForce;
-    public GameObject Dropdown_Effect;
+    [SerializeField] bool _TakingDamage = false;
     
 
     // Update is called once per frame
@@ -46,6 +50,14 @@ public class ThirdPerson : MonoBehaviour
         {
             Jumping(jump);
         }
+        float delaysum = 0;
+        delaysum += Time.deltaTime;
+        if (delaysum > 1.0f)
+        {
+            Debug.Log("Five Seconds have passed");
+        }
+
+        
 
     }
     void OnCollisionEnter(Collision collision)
@@ -54,12 +66,24 @@ public class ThirdPerson : MonoBehaviour
         {
             if (IsGrounded == false)
             {
+                Debug.Log(collision.relativeVelocity.magnitude);
                 IsGrounded = true;
-                _Thud.Play();
                 ContactPoint contact = collision.GetContact(0);
                 Vector3 NewOrientation = new Vector3(0, 0, -90);
-                GameObject _VFX = Instantiate(Dropdown_Effect, contact.point, Quaternion.identity);
-                _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal+NewOrientation);
+                if (collision.relativeVelocity.magnitude >= 18)
+                {
+                    _ThudHard.Play();
+                    GameObject _VFX = Instantiate(Dropdamage_Effect, contact.point, Quaternion.identity);
+                    _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal + NewOrientation);
+                    TakeDamage(collision.relativeVelocity.magnitude);
+
+                }
+                else if(collision.relativeVelocity.magnitude >= 7)
+                {
+                    _Thud.Play();
+                    GameObject _VFX = Instantiate(Dropdown_Effect, contact.point, Quaternion.identity);
+                    _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal + NewOrientation);
+                }
             }
         }
 
@@ -77,5 +101,34 @@ public class ThirdPerson : MonoBehaviour
             rb.AddForce(0, Force * JumpForce, 0);
         }
     }
-
+    public void TakeDamage(float Force)
+    {
+        if (_TakingDamage == false)
+        {
+            _TakingDamage = true;
+            int Damage = Mathf.RoundToInt(Force / 3);
+            Health -= Damage * Damage;
+            Debug.Log(Damage);
+            if (Health <= 0)
+            {
+                SceneManager.LoadScene(0);
+            }
+            _TakingDamage = false;
+        }
+        
+    }
+    public void Heal(int amount)
+    {
+        if (_TakingDamage == false && Health <= MaxHealth)
+        {
+            if (amount != 0) //If its not regenerative healing
+            {
+                Health += amount;
+                if (Health <= MaxHealth)
+                {
+                    Health = MaxHealth;
+                }
+            }
+        }
+    }
 }
