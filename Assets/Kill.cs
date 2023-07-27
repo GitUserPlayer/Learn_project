@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,9 +21,8 @@ public class Kill : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SceneManager.LoadScene(0);
+            other.GetComponent<ThirdPerson>().TakeDamage(9999,false);
         }
-
     }
         
 

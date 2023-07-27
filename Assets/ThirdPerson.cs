@@ -2,20 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using Unity.VisualScripting.Generated.PropertyProviders;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class ThirdPerson : MonoBehaviour
 {
     public CharacterController controller;
     public Rigidbody rb;
     public float speed = 6f;
     public float RegenRate = 1.0f;
+    //private float delaysum = 0;
     public AudioSource _Thud, _ThudHard, _Jump;
-    public GameObject Dropdown_Effect, Dropdamage_Effect;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, WHAM;
     public int Health, MaxHealth, JumpForce;
-    public bool IsGrounded = false;
+    public bool IsGrounded ,IsJumping, _Dead= false;
     [SerializeField] bool _TakingDamage = false;
     
 
@@ -26,7 +29,7 @@ public class ThirdPerson : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         CharacterController controller = GetComponent<CharacterController>();
     }
-    void Update()
+    void FixedUpdate()
     {
 
         float horizontal = Input.GetAxis("Horizontal");
@@ -42,20 +45,20 @@ public class ThirdPerson : MonoBehaviour
         Vector3 PlayerHVelocity = CameraRight * horizontal;
         Vector3 TotalVelocity = PlayerFVelocity + PlayerHVelocity;
 
-        if (TotalVelocity.magnitude >= 0.1f)
+        if (TotalVelocity.magnitude >= 0.1f && _Dead == false)
         {
          rb.velocity = new Vector3(TotalVelocity.x*speed, rb.velocity.y, TotalVelocity.z*speed);    
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) & IsJumping == false)
         {
-            Jumping(jump);
+            StartCoroutine(Jumping(10, 1)); //Jumping(FORCE,Cooldown)
+
         }
-        float delaysum = 0;
-        delaysum += Time.deltaTime;
-        if (delaysum > 1.0f)
+        if (Input.GetKey(KeyCode.R))
         {
-            Debug.Log("Five Seconds have passed");
+            rb.position = new Vector3(0,0,0);
         }
+        
 
         
 
@@ -74,8 +77,9 @@ public class ThirdPerson : MonoBehaviour
                 {
                     _ThudHard.Play();
                     GameObject _VFX = Instantiate(Dropdamage_Effect, contact.point, Quaternion.identity);
+                    GameObject _WHAM = Instantiate(WHAM, rb.position, Quaternion.identity);
                     _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal + NewOrientation);
-                    TakeDamage(collision.relativeVelocity.magnitude);
+                    TakeDamage(collision.relativeVelocity.magnitude,true);
 
                 }
                 else if(collision.relativeVelocity.magnitude >= 7)
@@ -93,29 +97,46 @@ public class ThirdPerson : MonoBehaviour
         IsGrounded = false;
     }
 
-    void Jumping(float Force)
+    IEnumerator Jumping(float Force ,int cooldown)
     {
-        if (IsGrounded == true)
+        if (IsGrounded == true && IsJumping == false)
         {
+            IsJumping = true;
             _Jump.Play();
+            Instantiate(Jump_Effect,rb.position, Quaternion.identity);
             rb.AddForce(0, Force * JumpForce, 0);
+            yield return new WaitForSeconds(cooldown);
+            IsJumping = false;
         }
     }
-    public void TakeDamage(float Force)
+    public void TakeDamage(float Force,bool IsFallDamage)
     {
         if (_TakingDamage == false)
         {
             _TakingDamage = true;
-            int Damage = Mathf.RoundToInt(Force / 3);
-            Health -= Damage * Damage;
-            Debug.Log(Damage);
-            if (Health <= 0)
+            if (IsFallDamage == false)
             {
-                SceneManager.LoadScene(0);
+                int TrueDamage = Mathf.RoundToInt(Force);
+                Health -= TrueDamage;
+                Debug.Log("Truedamage");
+                if (Health <= 0)
+                {
+                    StartCoroutine(Death());
+                }
+            }
+            else
+            {
+                int Damage = Mathf.RoundToInt(Force / 3);
+                Health -= Damage * Damage;
+                Debug.Log("Falldamage");
+                Debug.Log(Damage);
+                if (Health <= 0)
+                {
+                    StartCoroutine(Death());
+                }
             }
             _TakingDamage = false;
         }
-        
     }
     public void Heal(int amount)
     {
@@ -130,5 +151,13 @@ public class ThirdPerson : MonoBehaviour
                 }
             }
         }
+    }
+    private IEnumerator Death()
+    {
+        _Dead = true;
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(0);
     }
 }
