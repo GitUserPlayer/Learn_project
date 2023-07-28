@@ -1639,7 +1639,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385735886}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.050545584, y: 0.0043577338, z: -0.00022054822, w: 0.99871224}
+  m_LocalRotation: {x: 0.050545584, y: 0.004357729, z: -0.000220548, w: 0.99871224}
   m_LocalPosition: {x: -0.000000005799532, y: 0.00000009279251, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4909,6 +4909,7 @@ GameObject:
   - component: {fileID: 1668514098}
   - component: {fileID: 1668514097}
   - component: {fileID: 1668514096}
+  - component: {fileID: 1668514107}
   - component: {fileID: 1668514095}
   - component: {fileID: 1668514103}
   - component: {fileID: 1668514102}
@@ -4968,10 +4969,11 @@ MonoBehaviour:
   _Thud: {fileID: 1668514105}
   _ThudHard: {fileID: 1668514106}
   _Jump: {fileID: 1668514104}
+  _Pop: {fileID: 1668514107}
   Dropdown_Effect: {fileID: 3432958286849152088, guid: d8d25bc8f32b5624d81ad8f80ded7ba6, type: 3}
   Dropdamage_Effect: {fileID: 1937588672058342063, guid: fc9ff4000193c3643b3a95ade63b0a9d, type: 3}
   Jump_Effect: {fileID: 141433446842962269, guid: 9fe8f8b3288e45a44af36ff8aa04486e, type: 3}
-  WHAM: {fileID: 6889676053574524597, guid: 1244a9e4f6193654989497ad418a287b, type: 3}
+  _Death: {fileID: 1280141305896002, guid: e473029e4c70ad543a6879b82a732f4f, type: 3}
   Health: 100
   MaxHealth: 100
   JumpForce: 200
@@ -5046,7 +5048,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: 4ea90fd673ce0c94491b470138e25d92, type: 3}
+  - {fileID: 2100000, guid: 32f8d5f4edf1214458b65466eced1919, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5330,6 +5332,102 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 594945c320d2725409ae21c0074b2ec9, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &1668514107
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668514094}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: fff14ce5ae7adc241a448b0e623f3e5f, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -6007,10 +6105,11 @@ MonoBehaviour:
   _Thud: {fileID: 0}
   _ThudHard: {fileID: 0}
   _Jump: {fileID: 0}
+  _Pop: {fileID: 0}
   Dropdown_Effect: {fileID: 0}
   Dropdamage_Effect: {fileID: 0}
   Jump_Effect: {fileID: 0}
-  WHAM: {fileID: 0}
+  _Death: {fileID: 0}
   Health: 0
   MaxHealth: 0
   JumpForce: 0

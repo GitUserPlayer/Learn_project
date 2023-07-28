@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Generated.PropertyProviders;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
@@ -12,11 +13,12 @@ public class ThirdPerson : MonoBehaviour
 {
     public CharacterController controller;
     public Rigidbody rb;
+    Renderer mat;
     public float speed = 6f;
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
-    public AudioSource _Thud, _ThudHard, _Jump;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, WHAM;
+    public AudioSource _Thud, _ThudHard, _Jump, _Pop;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death;
     public int Health, MaxHealth, JumpForce;
     public bool IsGrounded ,IsJumping, _Dead= false;
     [SerializeField] bool _TakingDamage = false;
@@ -27,14 +29,12 @@ public class ThirdPerson : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
-        CharacterController controller = GetComponent<CharacterController>();
+        mat = GetComponent<Renderer>();
     }
     void FixedUpdate()
     {
-
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        float jump = Input.GetAxis("Jump");
         Vector3 CameraFoward = Camera.main.transform.forward;//Getting Camera Angle
         Vector3 CameraRight = Camera.main.transform.right;
         CameraFoward.y = 0;//Prevents flying
@@ -77,7 +77,6 @@ public class ThirdPerson : MonoBehaviour
                 {
                     _ThudHard.Play();
                     GameObject _VFX = Instantiate(Dropdamage_Effect, contact.point, Quaternion.identity);
-                    GameObject _WHAM = Instantiate(WHAM, rb.position, Quaternion.identity);
                     _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal + NewOrientation);
                     TakeDamage(collision.relativeVelocity.magnitude,true);
 
@@ -155,9 +154,19 @@ public class ThirdPerson : MonoBehaviour
     private IEnumerator Death()
     {
         _Dead = true;
-        rb.velocity = Vector3.zero;
-        rb.useGravity = false;
-        yield return new WaitForSeconds(3);
+        rb.isKinematic = true;
+        float start = mat.material.GetFloat("_Visibility");
+        float finish = 1;
+        float lerp = 0;
+        Instantiate(_Death, rb.position, Quaternion.identity);
+        _Pop.Play();
+        while (lerp < 1)
+        {
+            mat.material.SetFloat("_Visibility", Mathf.Lerp(start, finish, lerp));
+            lerp += Time.deltaTime;
+            yield return null;
+        }
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene(0);
     }
 }
