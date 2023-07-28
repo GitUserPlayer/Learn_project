@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Generated.PropertyProviders;
 using UnityEditor.PackageManager.Requests;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,9 +22,14 @@ public class ThirdPerson : MonoBehaviour
     public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death;
     public int Health, MaxHealth, JumpForce;
     public bool IsGrounded ,IsJumping, _Dead= false;
+    [SerializeField] GameObject SpawnPlatform;
     [SerializeField] bool _TakingDamage = false;
-    
 
+    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
+    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
+    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
+    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
+    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
     // Update is called once per frame
     void Start()
     {

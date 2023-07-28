@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5750119627280051937}
   - component: {fileID: 5871146401496972415}
   m_Layer: 0
-  m_Name: Kill Platform
+  m_Name: Kill_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
