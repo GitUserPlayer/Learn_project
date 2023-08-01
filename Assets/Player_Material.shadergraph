@@ -40,9 +40,6 @@
             "m_Id": "d5f2183608da46d4b88923ce77b29f1b"
         },
         {
-            "m_Id": "715f83d41a8f43febe02980d75329a4a"
-        },
-        {
             "m_Id": "84b50c92e191475eb2dcc6b5205207c8"
         },
         {
@@ -934,19 +931,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
-    "m_ObjectId": "4deb302007304a52a3e0070a9fe4ee64",
-    "m_Id": 0,
-    "m_DisplayName": "Out",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "Out",
-    "m_StageCapability": 3,
-    "m_BareResource": false
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "55ae21cb08af4c81805c0af0857f97b4",
     "m_Id": 0,
@@ -1313,43 +1297,6 @@
         "w": 0.0
     },
     "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Texture2DAssetNode",
-    "m_ObjectId": "715f83d41a8f43febe02980d75329a4a",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "Texture 2D Asset",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": -377.3334045410156,
-            "y": -266.0000305175781,
-            "width": 144.6666717529297,
-            "height": 106.00001525878906
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "4deb302007304a52a3e0070a9fe4ee64"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"0b343b179d2251243a8bbed3fe8e2773\",\"type\":3}}",
-        "m_Guid": ""
-    }
 }
 
 {

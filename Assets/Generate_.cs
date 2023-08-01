@@ -22,9 +22,6 @@ public class Generate_ : MonoBehaviour
     void Start()
     {
         OriginPoint = new Vector3 (0, 0, 0);
-        Vector3 Startpoint = new Vector3(20, 10, 20);
-        Instantiate(Spawnplatform, Startpoint, Quaternion.identity);
-        Generate();
         
     }
 

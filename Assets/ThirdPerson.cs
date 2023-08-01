@@ -9,6 +9,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;   
 
 public class ThirdPerson : MonoBehaviour
 {
@@ -19,11 +20,15 @@ public class ThirdPerson : MonoBehaviour
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
     public AudioSource _Thud, _ThudHard, _Jump, _Pop;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death,Res,GUI;
     public int Health, MaxHealth, JumpForce;
-    public bool IsGrounded ,IsJumping, _Dead= false;
+    public bool IsGrounded ,IsJumping, _Dead, _Gamestarted= false;
     [SerializeField] GameObject SpawnPlatform;
     [SerializeField] bool _TakingDamage = false;
+    RectTransform rt;
+    Vector3 Origin = new Vector3(0,0,0);
+    float originWidth;
+    
 
     // WARNING!!! THIS SCRIPT IS NOT FIXED YET
     // WARNING!!! THIS SCRIPT IS NOT FIXED YET
@@ -36,6 +41,10 @@ public class ThirdPerson : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         mat = GetComponent<Renderer>();
+        rt = GUI.GetComponent<RectTransform>();
+        originWidth = rt.sizeDelta.x;
+        
+
     }
     void FixedUpdate()
     {
@@ -62,7 +71,7 @@ public class ThirdPerson : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.R))
         {
-            rb.position = new Vector3(0,0,0);
+            rb.position = new Vector3(14.47f, 11.28f, 5.68f);
         }
         
 
@@ -123,9 +132,11 @@ public class ThirdPerson : MonoBehaviour
             {
                 int TrueDamage = Mathf.RoundToInt(Force);
                 Health -= TrueDamage;
-                Debug.Log("Truedamage");
+                HPLerping(Health);
+                Debug.Log("Lerped");
                 if (Health <= 0)
                 {
+                    Health = 0;
                     StartCoroutine(Death());
                 }
             }
@@ -135,8 +146,11 @@ public class ThirdPerson : MonoBehaviour
                 Health -= Damage * Damage;
                 Debug.Log("Falldamage");
                 Debug.Log(Damage);
+                HPLerping(Health);
+                Debug.Log("Lerped");
                 if (Health <= 0)
                 {
+                    Health = 0;
                     StartCoroutine(Death());
                 }
             }
@@ -173,6 +187,44 @@ public class ThirdPerson : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(2);
-        SceneManager.LoadScene(0);
+        StartCoroutine(Respawn());
+        
+    }
+    private IEnumerator Respawn()
+    {
+        if (_Dead == true)
+        {
+            rb.position = new Vector3(14.47f, 11.28f, 5.68f);
+            rb.isKinematic = false;
+            float start = mat.material.GetFloat("_Visibility");
+            float finish = 1;
+            float lerp = 0;
+            while (lerp < 1)
+            {
+                mat.material.SetFloat("_Visibility", 1-Mathf.Lerp(start, finish, lerp));
+                lerp += Time.deltaTime;
+                yield return null;
+            }
+            Health = MaxHealth;
+            HPLerping(Health);
+            Vector3 Particle = new Vector3(14.51f, 9.53f, 5.47f);
+            Vector3 NewOrientation = new Vector3(0, 0, -90);
+            GameObject VFX_ =Instantiate(Res, Particle,Quaternion.identity);
+            VFX_.transform.rotation = Quaternion.FromToRotation(Vector3.up,NewOrientation);
+            _Dead = false;
+        }
+    }
+    public void HPLerping(int Health)
+    {
+        if (Health <= 0)
+        {
+            rt.sizeDelta = new Vector2(0, rt.sizeDelta.y);
+            Debug.Log(rt.sizeDelta.x);
+        }
+        else
+        {
+            float lerp = (float)Health / (float)MaxHealth;
+            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
+        }
     }
 }
