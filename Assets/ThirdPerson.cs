@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Generated.PropertyProviders;
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;   
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class ThirdPerson : MonoBehaviour
 {
@@ -20,29 +20,29 @@ public class ThirdPerson : MonoBehaviour
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
     public AudioSource _Thud, _ThudHard, _Jump, _Pop;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death,Res,GUI;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death,Res,GUI,HP;
     public int Health, MaxHealth, JumpForce;
     public bool IsGrounded ,IsJumping, _Dead, _Gamestarted= false;
     [SerializeField] GameObject SpawnPlatform;
     [SerializeField] bool _TakingDamage = false;
     RectTransform rt;
+    TextMeshProUGUI txt;
+    UnityEngine.UI.Image hpbar;
     Vector3 Origin = new Vector3(0,0,0);
     float originWidth;
     
 
-    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
-    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
-    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
-    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
-    // WARNING!!! THIS SCRIPT IS NOT FIXED YET
-    // Update is called once per frame
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        Camera.main.fieldOfView = 120f;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         mat = GetComponent<Renderer>();
         rt = GUI.GetComponent<RectTransform>();
+        hpbar = GUI.GetComponent<UnityEngine.UI.Image>();
+        txt = HP.GetComponent<TextMeshProUGUI>();
         originWidth = rt.sizeDelta.x;
+        Application.targetFrameRate = 144;
         
 
     }
@@ -73,9 +73,24 @@ public class ThirdPerson : MonoBehaviour
         {
             rb.position = new Vector3(14.47f, 11.28f, 5.68f);
         }
-        
+        if (Input.GetKey(KeyCode.F))
+        {
+            if (UnityEngine.Cursor.lockState == CursorLockMode.Locked)
+            {
+                UnityEngine.Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
+        if (rb.velocity.y < -20)
+        {
+            TakeDamage(1,false);
+        }
+        HP_Update(Health);
 
-        
+
 
     }
     void OnCollisionEnter(Collision collision)
@@ -132,7 +147,6 @@ public class ThirdPerson : MonoBehaviour
             {
                 int TrueDamage = Mathf.RoundToInt(Force);
                 Health -= TrueDamage;
-                HPLerping(Health);
                 Debug.Log("Lerped");
                 if (Health <= 0)
                 {
@@ -146,7 +160,6 @@ public class ThirdPerson : MonoBehaviour
                 Health -= Damage * Damage;
                 Debug.Log("Falldamage");
                 Debug.Log(Damage);
-                HPLerping(Health);
                 Debug.Log("Lerped");
                 if (Health <= 0)
                 {
@@ -206,25 +219,45 @@ public class ThirdPerson : MonoBehaviour
                 yield return null;
             }
             Health = MaxHealth;
-            HPLerping(Health);
             Vector3 Particle = new Vector3(14.51f, 9.53f, 5.47f);
             Vector3 NewOrientation = new Vector3(0, 0, -90);
             GameObject VFX_ =Instantiate(Res, Particle,Quaternion.identity);
             VFX_.transform.rotation = Quaternion.FromToRotation(Vector3.up,NewOrientation);
+            txt.text = "HP("+Health+"/"+MaxHealth+")";
             _Dead = false;
         }
     }
-    public void HPLerping(int Health)
+    public void HP_Update(int Health)
     {
         if (Health <= 0)
         {
+            txt.text = "DEAD LOL";
             rt.sizeDelta = new Vector2(0, rt.sizeDelta.y);
             Debug.Log(rt.sizeDelta.x);
+        }
+        else if(Health <= 25)
+        {
+            float lerp = (float)Health / (float)MaxHealth;
+            hpbar.color = Color.red;
+            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
+            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
+            txt.color = hpbar.color;
+        }
+        else if (Health <= 75)
+        {
+            float lerp = (float)Health / (float)MaxHealth;
+            hpbar.color = Color.yellow;
+            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
+            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
+            txt.color = hpbar.color;
         }
         else
         {
             float lerp = (float)Health / (float)MaxHealth;
+            hpbar.color = new Color32(130, 222, 122, 255);
             rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
+            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
+            txt.color = hpbar.color;
         }
     }
 }

@@ -2,15 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using UnityEditor.VersionControl;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
-// WARNING!!! THIS SCRIPT IS NOT FIXED YET
+using UnityEngine.UI;
+using UnityEngine.UIElements;
+
 public class Generate_ : MonoBehaviour
 {
     public GameObject Platform;
@@ -18,17 +15,26 @@ public class Generate_ : MonoBehaviour
     [SerializeField] Vector3 OriginPoint;
     [SerializeField] private List<GameObject> platforms = new List<GameObject>();
     [SerializeField] private GameObject Spawnplatform;
+    public GameObject TXTIncrement, TXTLimit;
     // Start is called before the first frame update
     void Start()
     {
-        OriginPoint = new Vector3 (0, 0, 0);
-        
+        OriginPoint = new Vector3(0, 0, 0);
     }
-
     // Update is called once per frame
     void Update()
     {
 
+    }
+    public void CustomizeIncrement()
+    {
+        string temp = TXTIncrement.GetComponent<TMP_InputField>().text;
+        Increment = int.Parse(temp);
+    }
+    public void CustomizeLimit()
+    {
+        string temp = TXTLimit.GetComponent<TMP_InputField>().text;
+        _platlim = int.Parse(temp);
     }
     public void Generate()
     {
@@ -49,6 +55,7 @@ public class Generate_ : MonoBehaviour
                 }
             }
         }
+        OriginPoint = new Vector3(OriginPoint.x,OriginPoint.y-Increment*_platlim,OriginPoint.z);
     }
 }
 
