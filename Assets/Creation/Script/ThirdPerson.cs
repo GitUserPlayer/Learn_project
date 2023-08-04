@@ -1,36 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using TMPro;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Generated.PropertyProviders;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class ThirdPerson : MonoBehaviour
 {
+    public UI ui;
+    public Generate_ Generation;
     public CharacterController controller;
     public Rigidbody rb;
     Renderer mat;
-    public float speed = 6f;
+    [Range(0, 6)] public float speed = 6f;
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
     public AudioSource _Thud, _ThudHard, _Jump, _Pop;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death,Res,GUI,HP;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death, Res, GUI, HP;
     public int Health, MaxHealth, JumpForce;
-    public bool IsGrounded ,IsJumping, _Dead, _Gamestarted= false;
+    public int Levels = 1;
+    public bool IsGrounded, IsJumping, _Dead, _Gamestarted = false;
     [SerializeField] GameObject SpawnPlatform;
     [SerializeField] bool _TakingDamage = false;
-    RectTransform rt;
-    TextMeshProUGUI txt;
-    UnityEngine.UI.Image hpbar;
-    Vector3 Origin = new Vector3(0,0,0);
-    float originWidth;
-    
+
 
     void Start()
     {
@@ -38,12 +26,8 @@ public class ThirdPerson : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         mat = GetComponent<Renderer>();
-        rt = GUI.GetComponent<RectTransform>();
-        hpbar = GUI.GetComponent<UnityEngine.UI.Image>();
-        txt = HP.GetComponent<TextMeshProUGUI>();
-        originWidth = rt.sizeDelta.x;
         Application.targetFrameRate = 144;
-        
+
 
     }
     void FixedUpdate()
@@ -62,7 +46,7 @@ public class ThirdPerson : MonoBehaviour
 
         if (TotalVelocity.magnitude >= 0.1f && _Dead == false)
         {
-         rb.velocity = new Vector3(TotalVelocity.x*speed, rb.velocity.y, TotalVelocity.z*speed);    
+            rb.velocity = new Vector3(TotalVelocity.x * speed, rb.velocity.y, TotalVelocity.z * speed);
         }
         if (Input.GetKey(KeyCode.Space) & IsJumping == false)
         {
@@ -71,7 +55,8 @@ public class ThirdPerson : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.R))
         {
-            rb.position = new Vector3(14.47f, 11.28f, 5.68f);
+            rb.velocity = new Vector3(0, 0, 0);
+            rb.position = SpawnPlatform.transform.Find("Spawn").position;
         }
         if (Input.GetKey(KeyCode.F))
         {
@@ -86,9 +71,9 @@ public class ThirdPerson : MonoBehaviour
         }
         if (rb.velocity.y < -20)
         {
-            TakeDamage(1,false);
+            TakeDamage(1, false);
         }
-        HP_Update(Health);
+        ui.HP_Update(Health, MaxHealth);
 
 
 
@@ -108,10 +93,10 @@ public class ThirdPerson : MonoBehaviour
                     _ThudHard.Play();
                     GameObject _VFX = Instantiate(Dropdamage_Effect, contact.point, Quaternion.identity);
                     _VFX.transform.rotation = Quaternion.FromToRotation(Vector3.up, contact.normal + NewOrientation);
-                    TakeDamage(collision.relativeVelocity.magnitude,true);
+                    TakeDamage(collision.relativeVelocity.magnitude, true);
 
                 }
-                else if(collision.relativeVelocity.magnitude >= 7)
+                else if (collision.relativeVelocity.magnitude >= 7)
                 {
                     _Thud.Play();
                     GameObject _VFX = Instantiate(Dropdown_Effect, contact.point, Quaternion.identity);
@@ -126,19 +111,19 @@ public class ThirdPerson : MonoBehaviour
         IsGrounded = false;
     }
 
-    IEnumerator Jumping(float Force ,int cooldown)
+    IEnumerator Jumping(float Force, int cooldown)
     {
         if (IsGrounded == true && IsJumping == false)
         {
             IsJumping = true;
             _Jump.Play();
-            Instantiate(Jump_Effect,rb.position, Quaternion.identity);
+            Instantiate(Jump_Effect, rb.position, Quaternion.identity);
             rb.AddForce(0, Force * JumpForce, 0);
             yield return new WaitForSeconds(cooldown);
             IsJumping = false;
         }
     }
-    public void TakeDamage(float Force,bool IsFallDamage)
+    public void TakeDamage(float Force, bool IsFallDamage)
     {
         if (_TakingDamage == false)
         {
@@ -147,7 +132,6 @@ public class ThirdPerson : MonoBehaviour
             {
                 int TrueDamage = Mathf.RoundToInt(Force);
                 Health -= TrueDamage;
-                Debug.Log("Lerped");
                 if (Health <= 0)
                 {
                     Health = 0;
@@ -158,9 +142,6 @@ public class ThirdPerson : MonoBehaviour
             {
                 int Damage = Mathf.RoundToInt(Force / 3);
                 Health -= Damage * Damage;
-                Debug.Log("Falldamage");
-                Debug.Log(Damage);
-                Debug.Log("Lerped");
                 if (Health <= 0)
                 {
                     Health = 0;
@@ -177,7 +158,7 @@ public class ThirdPerson : MonoBehaviour
             if (amount != 0) //If its not regenerative healing
             {
                 Health += amount;
-                if (Health <= MaxHealth)
+                if (Health >= MaxHealth)
                 {
                     Health = MaxHealth;
                 }
@@ -201,63 +182,36 @@ public class ThirdPerson : MonoBehaviour
         }
         yield return new WaitForSeconds(2);
         StartCoroutine(Respawn());
-        
+
     }
     private IEnumerator Respawn()
     {
         if (_Dead == true)
         {
-            rb.position = new Vector3(14.47f, 11.28f, 5.68f);
+            rb.position = SpawnPlatform.transform.Find("Spawn").position;
             rb.isKinematic = false;
             float start = mat.material.GetFloat("_Visibility");
             float finish = 1;
             float lerp = 0;
             while (lerp < 1)
             {
-                mat.material.SetFloat("_Visibility", 1-Mathf.Lerp(start, finish, lerp));
+                mat.material.SetFloat("_Visibility", 1 - Mathf.Lerp(start, finish, lerp));
                 lerp += Time.deltaTime;
                 yield return null;
             }
             Health = MaxHealth;
-            Vector3 Particle = new Vector3(14.51f, 9.53f, 5.47f);
+            Vector3 Particle = SpawnPlatform.transform.Find("Spawn").position;
             Vector3 NewOrientation = new Vector3(0, 0, -90);
-            GameObject VFX_ =Instantiate(Res, Particle,Quaternion.identity);
-            VFX_.transform.rotation = Quaternion.FromToRotation(Vector3.up,NewOrientation);
-            txt.text = "HP("+Health+"/"+MaxHealth+")";
+            GameObject VFX_ = Instantiate(Res, Particle, Quaternion.identity);
+            VFX_.transform.rotation = Quaternion.FromToRotation(Vector3.up, NewOrientation);
+            ui.HP_Update(Health, MaxHealth);
             _Dead = false;
         }
     }
-    public void HP_Update(int Health)
+    public void LevelUp()
     {
-        if (Health <= 0)
-        {
-            txt.text = "DEAD LOL";
-            rt.sizeDelta = new Vector2(0, rt.sizeDelta.y);
-            Debug.Log(rt.sizeDelta.x);
-        }
-        else if(Health <= 25)
-        {
-            float lerp = (float)Health / (float)MaxHealth;
-            hpbar.color = Color.red;
-            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
-            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
-            txt.color = hpbar.color;
-        }
-        else if (Health <= 75)
-        {
-            float lerp = (float)Health / (float)MaxHealth;
-            hpbar.color = Color.yellow;
-            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
-            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
-            txt.color = hpbar.color;
-        }
-        else
-        {
-            float lerp = (float)Health / (float)MaxHealth;
-            hpbar.color = new Color32(130, 222, 122, 255);
-            rt.sizeDelta = new Vector2(Mathf.Lerp(0, originWidth, lerp), rt.sizeDelta.y);
-            txt.text = "HP(" + Health + "/" + MaxHealth + ")";
-            txt.color = hpbar.color;
-        }
+        Levels++;
+        ui.LevelUI(Levels);
+        Generation.Checkpoint(Levels);
     }
 }
