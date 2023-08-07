@@ -21,14 +21,16 @@ public class TriggerGenerate : MonoBehaviour
     {
         if (other.CompareTag("Player") && NotGenerating == true)
         {
-            Debug.Log("Player detected on trigger");
             NotGenerating = false;
             TP.LevelUp();
             Seed.GetComponent<Generate_>().Generate();
             Destroy(gameObject);
             
         }
-        NotGenerating = true;
+        else if (other.CompareTag("Debris"))
+        {
+            Destroy(other.gameObject);
+        }
 
     }
 }

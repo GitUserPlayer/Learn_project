@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ThirdPerson : MonoBehaviour
 {
@@ -11,13 +12,13 @@ public class ThirdPerson : MonoBehaviour
     [Range(0, 6)] public float speed = 6f;
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
-    public AudioSource _Thud, _ThudHard, _Jump, _Pop;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death, Res, GUI, HP;
+    public AudioSource _Thud, _ThudHard, _Jump, _Pop, _Heal;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death, Res, GUI, HP,_HealUp,CAM;
     public int Health, MaxHealth, JumpForce;
     public int Levels = 1;
     public bool IsGrounded, IsJumping, _Dead, _Gamestarted = false;
     [SerializeField] GameObject SpawnPlatform;
-    [SerializeField] bool _TakingDamage = false;
+    [SerializeField] bool _TakingDamage,gameover = false;
 
 
     void Start()
@@ -44,7 +45,7 @@ public class ThirdPerson : MonoBehaviour
         Vector3 PlayerHVelocity = CameraRight * horizontal;
         Vector3 TotalVelocity = PlayerFVelocity + PlayerHVelocity;
 
-        if (TotalVelocity.magnitude >= 0.1f && _Dead == false)
+        if (TotalVelocity.magnitude >= 0.1f && _Dead == false && gameover == false)
         {
             rb.velocity = new Vector3(TotalVelocity.x * speed, rb.velocity.y, TotalVelocity.z * speed);
         }
@@ -74,6 +75,13 @@ public class ThirdPerson : MonoBehaviour
             TakeDamage(1, false);
         }
         ui.HP_Update(Health, MaxHealth);
+        if (ui.RETURNTIMER <= 0 && gameover == false)
+        {
+            CAM.SetActive(false);
+            StartCoroutine(Death());
+            gameover = true;
+            ui.GameOver();
+        }
 
 
 
@@ -84,7 +92,6 @@ public class ThirdPerson : MonoBehaviour
         {
             if (IsGrounded == false)
             {
-                Debug.Log(collision.relativeVelocity.magnitude);
                 IsGrounded = true;
                 ContactPoint contact = collision.GetContact(0);
                 Vector3 NewOrientation = new Vector3(0, 0, -90);
@@ -151,16 +158,30 @@ public class ThirdPerson : MonoBehaviour
             _TakingDamage = false;
         }
     }
-    public void Heal(int amount)
+    public void Heal(int amount,bool Overdrive)
     {
         if (_TakingDamage == false && Health <= MaxHealth)
         {
-            if (amount != 0) //If its not regenerative healing
+            if (Overdrive==false)
             {
-                Health += amount;
-                if (Health >= MaxHealth)
+                if (amount != 0) //If its not regenerative healing
                 {
-                    Health = MaxHealth;
+                    Health += amount;
+                    _Heal.Play();
+                    Instantiate(_HealUp, rb.position, Quaternion.identity);
+                    if (Health >= MaxHealth)
+                    {
+                        Health = MaxHealth;
+                    }
+                }
+            }
+            else
+            {
+                if (amount != 0)
+                {
+                    MaxHealth += amount;
+                    _Heal.Play();
+                    Instantiate(_HealUp, rb.position, Quaternion.identity);
                 }
             }
         }
@@ -186,7 +207,7 @@ public class ThirdPerson : MonoBehaviour
     }
     private IEnumerator Respawn()
     {
-        if (_Dead == true)
+        if (_Dead == true && gameover == false)
         {
             rb.position = SpawnPlatform.transform.Find("Spawn").position;
             rb.isKinematic = false;
@@ -213,5 +234,10 @@ public class ThirdPerson : MonoBehaviour
         Levels++;
         ui.LevelUI(Levels);
         Generation.Checkpoint(Levels);
+    }
+
+    public void GameOver()
+    {
+        
     }
 }

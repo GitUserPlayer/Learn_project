@@ -1,12 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class Generate_ : MonoBehaviour
 {
@@ -51,7 +45,7 @@ public class Generate_ : MonoBehaviour
                     int RNG = UnityEngine.Random.Range(1, 10);
                     if (RNG != 7)
                     {
-                        int WhatPlatform = UnityEngine.Random.Range(0, 3);
+                        int WhatPlatform = UnityEngine.Random.Range(0, 4);
                         Vector3 SpawnpointX = new Vector3(OriginPoint.x + Increment * PlatformsX, OriginPoint.y - Increment * PlatformsY, OriginPoint.z + Increment * PlatformsZ);
                         GameObject SpawnedObject = Instantiate(platforms[WhatPlatform], SpawnpointX, Quaternion.identity);
                         Destroy(SpawnedObject, 30f);
@@ -64,12 +58,12 @@ public class Generate_ : MonoBehaviour
         GameObject TriG = Instantiate(TRIGGER, Triggerpoint, Quaternion.identity);
         TriG.transform.localScale = new Vector3(Increment * _platlim * 3, 1, Increment * _platlim * 3);
         TriG.transform.eulerAngles = new Vector3(0, 90, 0);
-        OriginPoint = new Vector3(OriginPoint.x, OriginPoint.y - Increment/2, OriginPoint.z);
+        OriginPoint = new Vector3(OriginPoint.x, OriginPoint.y - Increment / 2, OriginPoint.z);
     }
     public void Checkpoint(int Level)
     {
-        Spawnplatform.transform.position = new Vector3(Spawnplatform.transform.position.x, OriginPoint.y+SpawnHeight.y, Spawnplatform.transform.position.z);
-        GameObject Medkit = Instantiate(SpawnItems[0],Spawnplatform.transform.Find("Spawn").position, Quaternion.identity);
+        Spawnplatform.transform.position = new Vector3(Spawnplatform.transform.position.x, OriginPoint.y + SpawnHeight.y, Spawnplatform.transform.position.z);
+        GameObject Medkit = Instantiate(SpawnItems[0], Spawnplatform.transform.Find("Spawn").position, Quaternion.identity);
         Destroy(Medkit, 10f);
     }
 }
