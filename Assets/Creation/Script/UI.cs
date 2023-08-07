@@ -10,17 +10,18 @@ public class UI : MonoBehaviour
     TextMeshProUGUI txtLV;
     TextMeshProUGUI _Timer;
     UnityEngine.UI.Image hpbar;
-    Vector3 Origin = new Vector3(0, 0, 0);
-    float originWidth;    
+    float originWidth;
     public int RETURNTIMER;
     [Tooltip("HP BAR SPRITE")]
     public GameObject GUI;
     [Tooltip("HEALTH IN NUMBER DISPLAY")]
     public GameObject HP;
     [Tooltip("This is obvious bro")]
+    public AudioSource L;
     public GameObject LVL;
     public GameObject Clock;
     public GameObject gameover;
+    public GameObject warn;
     // Start is called before the first frame update
     void Start()
     {
@@ -84,20 +85,24 @@ public class UI : MonoBehaviour
             RETURNTIMER = Timer;
             yield return new WaitForSeconds(1);
             _Timer.text = Timer + " !!!";
-            //float Color = Mathf.Lerp(255, 0, 1 - (Timer / 30f));
-            //Debug.Log(Color);
-            _Timer.color = new Color(1, Timer/30f, Timer / 30f, 1);
+            _Timer.color = new Color(1, Timer / 30f, Timer / 30f, 1);
         }
     }
     public void GameOver()
     {
         StopAllCoroutines();
         gameover.SetActive(true);
+        L.Play();
         Cursor.lockState = CursorLockMode.None;
         gameObject.SetActive(false);
     }
     public void GameOut()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void Warning()
+    {
+        warn.SetActive(true);
+        Destroy(warn, 5f);
     }
 }

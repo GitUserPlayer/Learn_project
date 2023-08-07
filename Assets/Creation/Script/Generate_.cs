@@ -45,7 +45,7 @@ public class Generate_ : MonoBehaviour
                     int RNG = UnityEngine.Random.Range(1, 10);
                     if (RNG != 7)
                     {
-                        int WhatPlatform = UnityEngine.Random.Range(0, 4);
+                        int WhatPlatform = UnityEngine.Random.Range(0, 6);
                         Vector3 SpawnpointX = new Vector3(OriginPoint.x + Increment * PlatformsX, OriginPoint.y - Increment * PlatformsY, OriginPoint.z + Increment * PlatformsZ);
                         GameObject SpawnedObject = Instantiate(platforms[WhatPlatform], SpawnpointX, Quaternion.identity);
                         Destroy(SpawnedObject, 30f);

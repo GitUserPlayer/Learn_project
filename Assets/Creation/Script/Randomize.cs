@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,13 +13,16 @@ public class Randomize : MonoBehaviour
         switch (drng)
         {
             case > 85:
-                Instantiate(SpawnItems[2], Spawnpoint.transform.position, Quaternion.identity);
+                Destroy(Instantiate(SpawnItems[2], Spawnpoint.transform.position, Quaternion.identity), 30);
+                break;
+            case >= 75:
+                Destroy(Instantiate(SpawnItems[3], Spawnpoint.transform.position, Quaternion.identity), 30);
                 break;
             case >= 50:
-                Instantiate(SpawnItems[0], Spawnpoint.transform.position, Quaternion.identity);
+                Destroy(Instantiate(SpawnItems[0], Spawnpoint.transform.position, Quaternion.identity), 30);
                 break;
             case <= 25:
-                for (int i = 0; i < Random.Range(1,5); i++)
+                for (int i = 0; i < Random.Range(1, 5); i++)
                 {
                     GameObject lego = Instantiate(SpawnItems[1], Spawnpoint.transform.position, Quaternion.identity);
                     lego.GetComponent<Rigidbody>().AddForce(Random.Range(100, 500), Random.Range(200, 500), Random.Range(100, 500));

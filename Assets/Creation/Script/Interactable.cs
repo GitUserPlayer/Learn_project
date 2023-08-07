@@ -30,6 +30,11 @@ public class Interactable : MonoBehaviour
                     other.gameObject.GetComponent<ThirdPerson>().Heal(Random.Range(25, 50), true);
                     Destroy(gameObject);
                     break;
+                case "Speedo(Clone)":
+                    Debug.Log("Detected");
+                    other.gameObject.GetComponent<ThirdPerson>().SpeedBoost();
+                    Destroy(gameObject);
+                    break;
                 default:
                     Debug.Log("Invalid Item request");
                     break;

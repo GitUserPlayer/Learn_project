@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -9,11 +10,11 @@ public class ThirdPerson : MonoBehaviour
     public CharacterController controller;
     public Rigidbody rb;
     Renderer mat;
-    [Range(0, 6)] public float speed = 6f;
+    public float speed = 6f;
     public float RegenRate = 1.0f;
     //private float delaysum = 0;
-    public AudioSource _Thud, _ThudHard, _Jump, _Pop, _Heal;
-    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death, Res, GUI, HP,_HealUp,CAM;
+    public AudioSource _Thud, _ThudHard, _Jump, _Pop, _Heal,lol;
+    public GameObject Dropdown_Effect, Dropdamage_Effect, Jump_Effect, _Death, Res, GUI, HP,_HealUp,CAM,Electric;
     public int Health, MaxHealth, JumpForce;
     public int Levels = 1;
     public bool IsGrounded, IsJumping, _Dead, _Gamestarted = false;
@@ -23,7 +24,7 @@ public class ThirdPerson : MonoBehaviour
 
     void Start()
     {
-        Camera.main.fieldOfView = 120f;
+        
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         mat = GetComponent<Renderer>();
@@ -79,6 +80,7 @@ public class ThirdPerson : MonoBehaviour
         {
             CAM.SetActive(false);
             StartCoroutine(Death());
+            lol.Play();
             gameover = true;
             ui.GameOver();
         }
@@ -147,8 +149,9 @@ public class ThirdPerson : MonoBehaviour
             }
             else
             {
-                int Damage = Mathf.RoundToInt(Force / 3);
-                Health -= Damage * Damage;
+                float Damage = Force/3f;
+                Damage = Damage* (1f + Levels/5f);
+                Health -= Mathf.RoundToInt(Damage);
                 if (Health <= 0)
                 {
                     Health = 0;
@@ -234,10 +237,16 @@ public class ThirdPerson : MonoBehaviour
         Levels++;
         ui.LevelUI(Levels);
         Generation.Checkpoint(Levels);
+        if (Levels == 10)
+        {
+            ui.Warning();
+        }
     }
 
-    public void GameOver()
+   public void SpeedBoost()
     {
-        
+        speed += 1.5f;
+        GameObject VFX = Instantiate(Electric,rb.position, Quaternion.identity);
+        VFX.transform.SetParent(rb.transform, true);
     }
 }
